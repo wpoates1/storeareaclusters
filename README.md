@@ -16,3 +16,7 @@ Finally, for the moment, I have anonymised the stores used in this example. Perh
 - **Phase 4:** visualising and assessing the results
 
 Each phase is a separate GitHub folder, with explanatory text and code for each phase.
+
+## Methodology
+The approach followed in this demonstration is based on the the Area Classification method - see the methodology note at https://www.ons.gov.uk/methodology/geography/geographicalproducts/areaclassifications/2011areaclassifications/methodologyandvariables. The variables used to construct the clusters represented a selection of the ones used in that approach.
+
