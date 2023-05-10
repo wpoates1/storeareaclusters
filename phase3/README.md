@@ -82,4 +82,4 @@ From this point, the table of results can be visualised using a tool of your cho
 
 A top tip to aid the visualisation was to use an optimised colour palatte. Plenty of online guides for good colour palette design, including [this one](https://www.heavy.ai/blog/12-color-palettes-for-telling-better-stories-with-your-data).
 
-
+The results shown in the plot show a grouping of the stores that visually makes sense. 
