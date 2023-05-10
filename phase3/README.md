@@ -76,6 +76,10 @@ ON k.Store = p.Store
 ORDER BY 2, 1
 ```
 
-From this point, the table of results can be visualised using a tool of your choice! Export the table to CSV and import into Excel, for example. Another option is to use Looker Studio natively in Google Cloud, using the 'Explore with Looker Studio' option in the Export function.
+From this point, the table of results can be visualised using a tool of your choice! Export the table to CSV and import into Excel, for example. Another option is to use Looker Studio natively in Google Cloud, using the 'Explore with Looker Studio' option in the Export function. You will be able to produce sometihng that looks like this:
 
-![Cluster Map Outomce](2D cluster plot.png)
+![Cluster Map Outomce](https://github.com/wpoates1/storeareaclusters/blob/main/phase3/2D%20cluster%20plot.png)
+
+A top tip to aid the visualisation was to use an optimised colour palatte. Plenty of online guides for good colour palette design, including [this one](https://www.heavy.ai/blog/12-color-palettes-for-telling-better-stories-with-your-data).
+
+
