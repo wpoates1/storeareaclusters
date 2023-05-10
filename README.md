@@ -12,8 +12,8 @@ Finally, for the moment, I have anonymised the stores used in this example. Perh
 - **Pre-requisites:** what you need to have to proceed with the work
 - **Phase 1:** initialising the stores data and the census data
 - **Phase 2:** creating the features for use in the clustering model, including the spatial agglomeration ('feature engineering')
-- **Phase 3:** running the KMeans and PCA model. Evaluating the results
-- **Phase 4:** visualising and assessing the results
+- **Phase 3:** running the KMeans and PCA model. Evaluating the results and visualising the cluster plot
+- **Phase 4:** Geographic visualisation
 
 Each phase is a separate GitHub folder, with explanatory text and code for each phase.
 
