@@ -1,5 +1,7 @@
 # Phase 4 - Geographic Visualisation
 
+One geogrphical visualisation is presented below. An obvious extension to this task would be the use of more sophisticated visualisation tool - potentially a Python notebook, a desktop GIS or indeed Carto.
+
 ## Minimal Viable Visualisation
 The easiest way of visualising the results is to use Google's GeoDataViz tool. This isn't a particularly sophisticated tool, but suffices to produce a simple overview of the work completed.
 
@@ -53,3 +55,5 @@ Having created this final output, you can then navigate to that table and select
 ```
 
 You should end up with something like the following results:
+
+![Map of Clusters](https://github.com/wpoates1/storeareaclusters/blob/main/phase4/Map%20of%20Clusters.png)
