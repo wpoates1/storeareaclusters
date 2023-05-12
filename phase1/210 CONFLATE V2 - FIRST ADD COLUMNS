@@ -9,8 +9,8 @@ DECLARE i INT64;
 DECLARE maxCol INT64;
 
 -- Set the parameter values
-SET projectId = MY PROJECT;
-SET datasetName = MY DATASET;
+SET projectId = _PROJECT_;
+SET datasetName = _DATASET_;
 SET tableName = 'TS007_Age_NOMIS';  -- SOURCE TABLENAME
 SET targetTable = 'PVT_Conflated';  -- TARGET TABLE OF PRE-EXISTING VALUES
 
