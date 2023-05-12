@@ -85,8 +85,8 @@ DECLARE colPivotDataType STRING;
 DECLARE quoteChar STRING;
 
 -- CHANGE THESE VARIABLES AS APPROPRIATE
-SET projectId = 'MY PROJECT NAME';
-SET datasetName = 'MY DATASET NAME';
+SET projectId = _PROJECT_;
+SET datasetName = _DATASET_;
 SET tableName = 'TS044_Accommodation';
 SET colPrefix = 'TS044Code';
 SET colPivot = 'Accommodation_type__8_categories__Code';
@@ -114,6 +114,12 @@ EXECUTE IMMEDIATE "CREATE TABLE " || CONCAT("`", projectId, ".", datasetName, ".
 The PIVOT function created above is a very useful tool in BigQuery, and by using the approach above, it is relatively quick and easy. As this work was being prepared however (Q1 2023), the NOMIS service releaed their bulk data downloads for the Census 2021 results. These are provided in a pre-pivotted form, in ZIP files at https://www.nomisweb.co.uk/sources/census_2021_bulk. Just download the zip, extract and locate the CSV labelled "-oa" for the output area level data. Generally the largest file.
 
 Using these files avoids entirely the need for the intial pivot function and in a lot of cases. Just create a new table in BigQuery by uploading this CSV. The only downside of this approach is that the column headers created by this approach are extremely long and don't follow the nice convention using the Code prefix above.
+
+For the purposes of this demonstration, one NOMIS format table was loaded:
+
+|ONS Table|Contents|Link|
+|---------|--------|----|
+|TS007A|Age by five-year age bands|https://www.nomisweb.co.uk/output/census/2021/census2021-ts007a.zip|
 
 # Conflating the Census Tables
 To undertake the modelling, all the separate - now pivotted - it is easier to compile all the data into a single, wide table containing all the parameters for every Output Area. This 'big wide table' is a typical approach of working with BigQuery and avoids lots of subsequent join operations.
@@ -161,8 +167,8 @@ DECLARE i INT64;
 DECLARE maxCol INT64;
 
 -- Set the parameter values
-SET projectId = MY PROJECT;
-SET datasetName = MY DATASET;
+SET projectId = _PROJECT_;
+SET datasetName = _DATASET_;
 SET tableName = 'TS007_Age_NOMIS';  -- SOURCE TABLENAME
 SET targetTable = 'PVT_Conflated';  -- TARGET TABLE OF PRE-EXISTING VALUES
 
@@ -204,8 +210,8 @@ DECLARE setClause STRING DEFAULT '';
 DECLARE excludedColumns STRING;
 
 -- Set the parameter values
-SET projectId = MY PROJECT;
-SET datasetName = MY DATASET;
+SET projectId = _PROJECT_;
+SET datasetName = _DATASET_;
 SET sourceTable = 'TS007_Age_Nomis';  -- SOURCE TABLE
 SET targetTable = 'PVT_Conflated';   -- TARGET TABLE
 
