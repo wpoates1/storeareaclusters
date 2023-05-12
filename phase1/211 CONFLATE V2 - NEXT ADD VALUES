@@ -9,8 +9,8 @@ DECLARE setClause STRING DEFAULT '';
 DECLARE excludedColumns STRING;
 
 -- Set the parameter values
-SET projectId = MY PROJECT;
-SET datasetName = MY DATASET;
+SET projectId = _PROJECT_;
+SET datasetName = _DATASET_;
 SET sourceTable = 'TS007_Age_Nomis';  -- SOURCE TABLE
 SET targetTable = 'PVT_Conflated';   -- TARGET TABLE
 
