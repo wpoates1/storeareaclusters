@@ -12,8 +12,8 @@ DECLARE colPivotDataType STRING;
 DECLARE quoteChar STRING;
 
 -- Set the parameter values
-SET projectId = 'gdms-demo-20230201';
-SET datasetName = 'census2021';
+SET projectId = _PROJECT_;
+SET datasetName = _DATASET_;
 SET tableName = 'TS044_Accommodation';
 SET fqTable = CONCAT("`", projectId, ".", datasetName, ".", tableName, "`");
 SET colPivot = 'Accommodation_type__8_categories__Code';
