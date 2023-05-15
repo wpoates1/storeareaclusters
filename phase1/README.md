@@ -8,6 +8,14 @@ In this example, we are starting with a prepared list of stores, giving the loca
 
 This process yielded a CSV file with nicely formatted addresses, co-ordinates for the postcodes and also a few other additional geography features that may come in handy.
 
+### Uploading to BigQuery
+First, if you haven't done so alread, create a Google Cloud Storage bucket to hold all these files. Use the default settings - including accepting the US Multi Region (the default setting) for location. This [guide](https://www.techrepublic.com/article/how-to-create-a-file-storage-bucket-in-google-cloud-platform/) has a useful tutorial if you are unsure about this. Upload the stores.csv file to this bucket - you can drag and drop from Explorer if you are using Chrome! Otherwise, use the Upload function in the console.
+
+Next upload this CSV file to BigQuery to create our dataset. If you're unsure about how to do this, take a look at Google's [help document](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#loading_csv_data_into_a_table). The data here is all nicely formatted and will load just by accepting the defaults, including schema autodetect. Again, to keep life simple, accept the default location as US Multi-region for the new table. 
+
+To recap - detailed instructions for to create the table:
+- In the BigQuery Explorer pane, click the three dots next to your project name. Create a new dataset in your project, selecting US multi-region as the location. Use `stores` as the table name to allow the queries in the later phases to run succesfully;
+- Now that you've created your dataset, add the tables from cloud storage by pressing + ADD in Explorer, or the 3 dots next to the dataset name;
 
 ## Census Data - Demographic Data Apprach 1: Directly Sourced from ONS
 ### Sourcing the Data
@@ -49,13 +57,9 @@ E00074349,E00074349,1,Lives in a household,307
 E00074349,E00074349,2,Lives in a communal establishment,0
 ```
 
-### Loading the data into BigQuery
-Download the 5 files to your local machine and each to a Google Cloud Storage bucket in the US Multi Region (the default setting). This [guide](https://www.techrepublic.com/article/how-to-create-a-file-storage-bucket-in-google-cloud-platform/) has a useful tutorial if you are unsure about this.
 
-From there, they can be added as tables into your dataset in BigQuery. If you're unsure about how to do this, take a look at Google's [help document](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#loading_csv_data_into_a_table). The data here is all nicely formatted and will load just by accepting the defaults, including schema autodetect. Again, to keep life simple, accept the default location as US Multi-region for the new table. Detailed instructions are:
-- In the BigQuery Explorer pane, click the three dots next to your project name. Create a new dataset in your project, selecting US multi-region as the location;
-- Now that you've created your dataset, add the tables from cloud storage by pressing + ADD in Explorer, or the 3 dots next to the dataset name;
-- As you add the files, please use the naming convention TS0nn for the table names - it will make the later SQL below easier!
+### Loading the data into BigQuery
+Download the 5 files to your local machine and each to your Google Cloud Storage. From there, they can be added as tables into your dataset in BigQuery. Use the same approach used for the stores table earlier, but in this case please use the naming convention TS0nn for the table names - it will make the later SQL below easier!
 
 Following these steps, you should end up with 5 tables in your dataset: `TS001`, `TS044`, `TS062`, `TS063`, `TS066`. Take a look at the contents of each table and you'll see that it is data in normal form, with a row for each combination of output area and variable. The parentheses and spaces in the columns names were replaced by underscore characters during import, making for long column names that are not idea for SQL queries. But other than that, the data should load succesfully.
 
