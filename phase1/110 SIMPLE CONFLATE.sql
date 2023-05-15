@@ -1,17 +1,34 @@
--- CHANGE THE PROJECT AND DATASET VALUES BELOW AND IN THE JOIN STATEMENTS BELOW
-CREATE OR REPLACE TABLE _PROJECT_._DATASET_.PVT2_Conflated AS
+-- CONFLATE THE TABLES INTO A SINGLE PVT_CONFLATED TABLE
+--  USING THE GEOGRAPHY CODE FOR THE JOIN
+CREATE OR REPLACE TABLE _PROJECT_._DATASET_.PVT_Conflated AS
 SELECT
-  T1.geography_code,
-  T1.* EXCEPT(date, geography, geography_code),
+  T1.*,
   T2.* EXCEPT(Output_Areas),
-  T3.* EXCEPT(Output_Areas)
+  T3.* EXCEPT(Output_Areas),
+  T4.* EXCEPT(Output_Areas),
+  T5.* EXCEPT(Output_Areas),
+  T6.* EXCEPT(date, geography, geography_code)    -- THE TABLE LOADED DIRECT FROM NOMIS
 FROM
-  _DATASET_.TS055_Bedrooms AS T1
+  _DATASET_.PVT_TS001_Residents AS T1    -- THE BASE TABLE
+
+-- THE TABLES BELOW ARE JOINED TO THE BASE TABLE
 JOIN
-  _DATASET_.PVT_TS044_Accommodation AS T2
+  _DATASET_.PVT_TS044 AS T2
 ON
-  T1.geography_code = T2.Output_Areas
+  T1.Output_Areas = T2.Output_Areas
 JOIN
-  _DATASET_.PVT_TS062_NSSEC AS T3
+  _DATASET_.PVT_TS062 AS T3
 ON
-  T1.geography_code = T3.Output_Areas;
+  T1.Output_Areas = T3.Output_Areas
+JOIN
+  _DATASET_.PVT_TS063 AS T4
+ON
+  T1.Output_Areas = T4.Output_Areas
+JOIN
+  _DATASET_.PVT_TS066 AS T5
+ON
+  T1.Output_Areas = T5.Output_Areas
+JOIN
+  _DATASET_.TS007 AS T6
+ON
+  T1.Output_Areas = T6.geography_code;
