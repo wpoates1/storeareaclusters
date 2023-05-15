@@ -1,4 +1,4 @@
-# Phase 2 - Preparing Data Inputs
+# Phase 1 - Preparing Data Inputs
 
 ## Stores Data
 In this example, we are starting with a prepared list of stores, giving the location of 160 outlets of a UK retailer. The list has been truncated to include only England and Wales, reflecting the coverage of the ONS census data. Including data for Scotland and Northern Ireland is an obvious extension task. In this instance, the process for preparing this list was:
@@ -50,9 +50,14 @@ E00074349,E00074349,2,Lives in a communal establishment,0
 ```
 
 ### Loading the data into BigQuery
-The simplest data loading approach is to load the tables directly into the BigQuery dataset, using Schema Autodetect. The other straightforward is to add a file to a Google Cloud Storage bucket and then loading from there - that approach has the advantage of ensring the raw data is available for future use. The parentheses and spaces in the columns names were replaced by underscore characters, making for long column names that are not idea for SQL queries. But other than that, the data should load succesfully.
+Download the 5 files to your local machine and each to a Google Cloud Storage bucket in the US Multi Region (the default setting). This [guide](https://www.techrepublic.com/article/how-to-create-a-file-storage-bucket-in-google-cloud-platform/) has a useful tutorial if you are unsure about this.
 
-There is the potential to script and automate this process. This is easily accomplished by using the Google SDK on the desktop command line or on the Google Cloud Console. Python code can also do the job and with a CSV table in Cloud Storage, you can actually use SQL as well. However given the small number of tables involved, the manual approach is the most appropriate.
+From there, they can be added as tables into your dataset in BigQuery. If you're unsure about how to do this, take a look at Google's [help document](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#loading_csv_data_into_a_table). The data here is all nicely formatted and will load just by accepting the defaults, including schema autodetect. Again, to keep life simple, accept the default location as US Multi-region for the new table. Detailed instructions are:
+- In the BigQuery Explorer pane, click the three dots next to your project name. Create a new dataset in your project, selecting US multi-region as the location;
+- Now that you've created your dataset, add the tables from cloud storage by pressing + ADD in Explorer, or the 3 dots next to the dataset name;
+- As you add the files, please use the naming convention TS0nn for the table names - it will make the later SQL below easier!
+
+Following these steps, you should end up with 5 tables in your dataset: `TS001`, `TS044`, `TS062`, `TS063`, `TS066`. Take a look at the contents of each table and you'll see that it is data in normal form, with a row for each combination of output area and variable. The parentheses and spaces in the columns names were replaced by underscore characters during import, making for long column names that are not idea for SQL queries. But other than that, the data should load succesfully.
 
 
 ### Reformatting and Pivoting - Create New Table for Output
@@ -113,118 +118,53 @@ EXECUTE IMMEDIATE "CREATE TABLE " || CONCAT("`", projectId, ".", datasetName, ".
 ## Census Data - Demographic Data Approach 2: NOMIS pre-pivotted
 The PIVOT function created above is a very useful tool in BigQuery, and by using the approach above, it is relatively quick and easy. As this work was being prepared however (Q1 2023), the NOMIS service releaed their bulk data downloads for the Census 2021 results. These are provided in a pre-pivotted form, in ZIP files at https://www.nomisweb.co.uk/sources/census_2021_bulk. Just download the zip, extract and locate the CSV labelled "-oa" for the output area level data. Generally the largest file.
 
-Using these files avoids entirely the need for the intial pivot function and in a lot of cases. Just create a new table in BigQuery by uploading this CSV. The only downside of this approach is that the column headers created by this approach are extremely long and don't follow the nice convention using the Code prefix above.
-
-For the purposes of this demonstration, one NOMIS format table was loaded:
+For this demo, we have used only one of the tables in this format:
 
 |ONS Table|Contents|Link|
 |---------|--------|----|
 |TS007A|Age by five-year age bands|https://www.nomisweb.co.uk/output/census/2021/census2021-ts007a.zip|
 
+
+Using these files avoids entirely the need for the intial pivot function and in a lot of cases. Just create a new table in BigQuery by uploading this CSV via Google Cloud Storage as per the method above. Call it `TS007`. The only downside of this approach is that the column headers created by this approach are extremely long and don't follow the nice convention using the Code prefix above. Note that these are also 
+
+
 # Conflating the Census Tables
-To undertake the modelling, all the separate - now pivotted - it is easier to compile all the data into a single, wide table containing all the parameters for every Output Area. This 'big wide table' is a typical approach of working with BigQuery and avoids lots of subsequent join operations.
-
-## Method 1: SELECT and JOIN
-There are a number of approaches to generating this big, wide table. The simplest approach is just to run a big SELECT query with a join on the OutputAreaID. The SQL statement below does that, for three census tables. Note that in this instance that `TS055_Bedrooms` has been loaded directly from NOMIS rather than having being created using the PIVOT method and the query excludes a couple of other fields from the conflated table.
+For the next stage of the work, we need to pull together all the data from the 6 files that have been loaded. The SQL below selects all the content and uses it to create a new table: `PVT_Conflated`
 
 ```SQL
--- CHANGE THE PROJECT AND DATASET VALUES BELOW AND IN THE JOIN STATEMENTS BELOW
-CREATE OR REPLACE TABLE _PROJECT_._DATASET_.PVT2_Conflated AS
+-- CONFLATE THE TABLES INTO A SINGLE PVT_CONFLATED TABLE
+--  USING THE GEOGRAPHY CODE FOR THE JOIN
+CREATE OR REPLACE TABLE _PROJECT_._DATASET_.PVT_Conflated AS
 SELECT
-  T1.geography_code,
-  T1.* EXCEPT(date, geography, geography_code),
+  T1.*,
   T2.* EXCEPT(Output_Areas),
-  T3.* EXCEPT(Output_Areas)
+  T3.* EXCEPT(Output_Areas),
+  T4.* EXCEPT(Output_Areas),
+  T5.* EXCEPT(Output_Areas),
+  T6.* EXCEPT(date, geography, geography_code)    -- THE TABLE LOADED DIRECT FROM NOMIS
 FROM
-  _DATASET_.TS055_Bedrooms AS T1
+  _DATASET_.PVT_TS001_Residents AS T1    -- THE BASE TABLE
+
+-- THE TABLES BELOW ARE JOINED TO THE BASE TABLE
 JOIN
-  _DATASET_.PVT_TS044_Accommodation AS T2
+  _DATASET_.PVT_TS044 AS T2
 ON
-  T1.geography_code = T2.Output_Areas
+  T1.Output_Areas = T2.Output_Areas
 JOIN
-  _DATASET_.PVT_TS062_NSSEC AS T3
+  _DATASET_.PVT_TS062 AS T3
 ON
-  T1.geography_code = T3.Output_Areas;
-```
-
-## Method 2: Add New Columns to a pre-existing Table
-The first approach regenerates the table from scratch each time the query is run. This becomes problematic if there are values in the table that you actually want to preserve. In that case, the requirment is to undertake two actions on an underlying base table: 
-- Add empty columns of the right type
-- Populating the content of those columns
-
-### Adding empty columns
-This SQL iterates over the columns in a source table, collects the ones required using the `INFORMATION SCHEMA` and then adds them in turn to a target table using an `ALTER TABLE ADD COLUMN` DDL statement. Somewhat annoyingly there is a limit of 5 change instructions per 10 seconds. The code below uses an interation loop to ensure that this limit isn't exceeded. If there are more than 5 columns to add, then the script will need to be run multiple times - waiting at least 10 seconds between each execution!   
-
-```SQL
-DECLARE projectId STRING;
-DECLARE datasetName STRING;
-DECLARE tableName STRING;
-DECLARE targetTable STRING;
-DECLARE columnInfoArray ARRAY<STRUCT<column_name STRING, data_type STRING>>;
-DECLARE existingColumns ARRAY<STRING>;
-DECLARE excludedColumns STRING;
-DECLARE i INT64;
-DECLARE maxCol INT64;
-
--- Set the parameter values
-SET projectId = _PROJECT_;
-SET datasetName = _DATASET_;
-SET tableName = 'TS007_Age_NOMIS';  -- SOURCE TABLENAME
-SET targetTable = 'PVT_Conflated';  -- TARGET TABLE OF PRE-EXISTING VALUES
-
--- Set the excluded columns
-SET excludedColumns = "'date', 'geography', 'geography_code'";
-
--- Get the column names and data types from the source table, excluding the specified columns
-EXECUTE IMMEDIATE "SELECT ARRAY_AGG(STRUCT(column_name, data_type)) FROM " || projectId || "." || datasetName || ".INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" || tableName || "' AND column_name NOT IN (" || excludedColumns || ")" INTO columnInfoArray;
-
-
--- Get the existing column names in the target table
-EXECUTE IMMEDIATE "SELECT ARRAY_AGG(column_name) FROM " || projectId || "." || datasetName || ".INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" || targetTable || "'" INTO existingColumns;
-
--- Remove the columns that already exist in the target table from columnInfoArray
-SET columnInfoArray = (SELECT ARRAY_AGG(columnInfo) FROM UNNEST(columnInfoArray) AS columnInfo WHERE columnInfo.column_name NOT IN (SELECT * FROM UNNEST(existingColumns)));
-
--- Iterate through the columns and add them to the target table using ALTER TABLE ADD COLUMN IF NOT EXISTS, limiting to 5 columns at a time at most
-SET maxCol = (SELECT MIN(x) FROM UNNEST([5, ARRAY_LENGTH(columnInfoArray)]) AS x);
-
-SET i = 1;
-WHILE (i <= maxCol)
-DO
-  EXECUTE IMMEDIATE 'ALTER TABLE `' || projectId || '.' || datasetName || '.' || targetTable || '` ADD COLUMN IF NOT EXISTS ' || columnInfoArray[ORDINAL(i)].column_name || ' ' || columnInfoArray[ORDINAL(i)].data_type || ';';
-  SET i = i + 1;
-END WHILE;
-```
-
-The next step is then to populate the columns:
-
-```SQL
--- UPDATES COLUMNS FROM AN INDIVIDUAL CENSUS TABLE TO THE MAIN PIVOTED TABLE
---  RELIES ON THE COLUMNS EXISTING. IF THEY NEED TO BE ADDED, THEN USE THE ADD COLUMNS TO PIVOT QUERY
-DECLARE projectId STRING;
-DECLARE datasetName STRING;
-DECLARE sourceTable STRING;
-DECLARE targetTable STRING;
-DECLARE columnNames ARRAY<STRING>;
-DECLARE setClause STRING DEFAULT '';
-DECLARE excludedColumns STRING;
-
--- Set the parameter values
-SET projectId = _PROJECT_;
-SET datasetName = _DATASET_;
-SET sourceTable = 'TS007_Age_Nomis';  -- SOURCE TABLE
-SET targetTable = 'PVT_Conflated';   -- TARGET TABLE
-
--- Set the excluded columns
-SET excludedColumns = "'date', 'geography', 'geography_code'";
-
--- Get the column names from the source table, excluding the 'Output_Areas' column
-EXECUTE IMMEDIATE "SELECT ARRAY_AGG(column_name) FROM " || projectId || "." || datasetName || ".INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" || sourceTable || "' AND column_name NOT IN (" || excludedColumns || ")" INTO columnNames;
-
--- Generate the SET clause for the UPDATE statement
-SET setClause = (SELECT STRING_AGG(columnName || ' = source.' || columnName, ', ') FROM UNNEST(columnNames) AS columnName);
-
--- Perform the UPDATE statement on the target table
-EXECUTE IMMEDIATE "UPDATE `" || projectId || "." || datasetName || "." || targetTable || "` AS target SET " || setClause || " FROM `" || projectId || "." || datasetName || "." || sourceTable || "` AS source WHERE target.Output_Areas = source.geography_code";
+  T1.Output_Areas = T3.Output_Areas
+JOIN
+  _DATASET_.PVT_TS063 AS T4
+ON
+  T1.Output_Areas = T4.Output_Areas
+JOIN
+  _DATASET_.PVT_TS066 AS T5
+ON
+  T1.Output_Areas = T5.Output_Areas
+JOIN
+  _DATASET_.TS007 AS T6
+ON
+  T1.Output_Areas = T6.geography_code;
 ```
 
