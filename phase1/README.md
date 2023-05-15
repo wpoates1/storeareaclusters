@@ -14,8 +14,11 @@ First, if you haven't done so alread, create a Google Cloud Storage bucket to ho
 Next upload this CSV file to BigQuery to create our dataset. If you're unsure about how to do this, take a look at Google's [help document](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#loading_csv_data_into_a_table). The data here is all nicely formatted and will load just by accepting the defaults, including schema autodetect. Again, to keep life simple, accept the default location as US Multi-region for the new table. 
 
 To recap - detailed instructions for to create the table:
-- In the BigQuery Explorer pane, click the three dots next to your project name. Create a new dataset in your project, selecting US multi-region as the location. Use `stores` as the table name to allow the queries in the later phases to run succesfully;
-- Now that you've created your dataset, add the tables from cloud storage by pressing + ADD in Explorer, or the 3 dots next to the dataset name;
+- In the BigQuery Explorer pane, click the three dots next to your project name. Create a new dataset in your project (giving it a short but meaningful name), selecting US multi-region as the location;
+- Now that you've created your dataset, create the `stores` stable by pressing + ADD in Explorer, or the 3 dots next to the dataset name. This will allow to Create Table from Cloud Storage, where you can select the stores.csv file you've just uploaded. Just accept the defaults as the `Auto-detect schema` should operate fine over this CSV file;
+
+It is possible to create the table by uploading directly to BigQuery, but going via cloud storage first ensures that if there are connectivity or bandwidth issues, the load process doesn't time out.
+
 
 ## Census Data - Demographic Data Apprach 1: Directly Sourced from ONS
 ### Sourcing the Data
