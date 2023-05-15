@@ -89,14 +89,32 @@ DECLARE colPrefix STRING;
 DECLARE colPivotDataType STRING;
 DECLARE quoteChar STRING;
 
--- CHANGE THESE VARIABLES AS APPROPRIATE
+-- CHANGE THESE TO MATCH YOUR PROJECT AND DATASET
 SET projectId = _PROJECT_;
 SET datasetName = _DATASET_;
-SET tableName = 'TS044_Accommodation';
-SET colPrefix = 'TS044Code';
-SET colPivot = 'Accommodation_type__8_categories__Code';
+
+-- APPLY EACH OF THESE IN TURN BY COMMENTING AND UNCOMMENTING
+--   THIS WILL CREATE NEW PIVOTTED OUTPUT FOR EACH OF THE INPUT TABLES
+SET tableName = 'TS001';
+SET colPivot = 'Residence_type__2_categories__Code';
+
+-- SET tableName = 'TS044';
+-- SET colPivot = 'Accommodation_type__8_categories__Code';
+
+-- SET tableName = 'TS062';
+-- SET colPivot = 'National_Statistics_Socio_economic_Classification__NS_SeC___10_categories__Code';
+
+-- SET tableName = 'TS063';
+-- SET colPivot = 'Occupation__current___10_categories__Code';
+
+-- SET tableName = 'TS066';
+-- SET colPivot = 'Economic_activity_status__20_categories__Code';
+
+-- THESE ARE THE SAME FOR EACH INPUT TABLE BE FIXED FOR EACH
 SET colID = 'Output_Areas';
 SET colValue = 'Observation';
+SET colPrefix = CONCAT(tableName,'Code');
+
 
 SET fqTable = CONCAT("`", projectId, ".", datasetName, ".", tableName, "`");
 
