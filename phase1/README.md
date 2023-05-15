@@ -79,7 +79,7 @@ In order to deliver the cluster, the first part of the process is to flatten / d
 
 - This may or may not be necessary, but to get this function to work, in the final PIVOT query, I used a pre-query to select only the 3 necessary columns from the underlying census table
 
-So the PIVOT action therefore requires a multi-stage process: get the data type to determine quote-wrapping, constructing the string list of columns to pivot (with quote-wrapping as required), then constructing the final query. The code below (and in the repository) completes all these steps for a given input Census table. Change the values in the variables block to align to your particular project: the example below has been set for Table TS044 which gives results for the accommdoation type.
+So the PIVOT action therefore requires a multi-stage process: get the data type to determine quote-wrapping, constructing the string list of columns to pivot (with quote-wrapping as required), then constructing the final query. The code below (and in the repository) completes all these steps for a given input Census table. Change the comments to work through the 5 tables one by one: the example below has been set for Table TS001 which gives results for the residence type.
 
 
 ```SQL
