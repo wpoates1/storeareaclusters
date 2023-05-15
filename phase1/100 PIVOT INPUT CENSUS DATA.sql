@@ -11,27 +11,44 @@ DECLARE colPrefix STRING;
 DECLARE colPivotDataType STRING;
 DECLARE quoteChar STRING;
 
--- Set the parameter values
+-- CHANGE THESE TO MATCH YOUR PROJECT AND DATASET
 SET projectId = _PROJECT_;
 SET datasetName = _DATASET_;
-SET tableName = 'TS044_Accommodation';
-SET fqTable = CONCAT("`", projectId, ".", datasetName, ".", tableName, "`");
-SET colPivot = 'Accommodation_type__8_categories__Code';
+
+-- APPLY EACH OF THESE IN TURN BY COMMENTING AND UNCOMMENTING
+--   THIS WILL CREATE NEW PIVOTTED OUTPUT FOR EACH OF THE INPUT TABLES
+SET tableName = 'TS001';
+SET colPivot = 'Residence_type__2_categories__Code';
+
+-- SET tableName = 'TS044';
+-- SET colPivot = 'Accommodation_type__8_categories__Code';
+
+-- SET tableName = 'TS062';
+-- SET colPivot = 'National_Statistics_Socio_economic_Classification__NS_SeC___10_categories__Code';
+
+-- SET tableName = 'TS063';
+-- SET colPivot = 'Occupation__current___10_categories__Code';
+
+-- SET tableName = 'TS066';
+-- SET colPivot = 'Economic_activity_status__20_categories__Code';
+
+-- THESE ARE THE SAME FOR EACH INPUT TABLE BE FIXED FOR EACH
 SET colID = 'Output_Areas';
 SET colValue = 'Observation';
-SET colPrefix = 'TS044Code';
+SET colPrefix = CONCAT(tableName,'Code');
 
--- Get the data type of the colPivot column
+
+SET fqTable = CONCAT("`", projectId, ".", datasetName, ".", tableName, "`");
+
+-- 1. GET THE DATA TYPE FOR THE VALUES THAT WILL FORM THE COLUMN HEADRES IN THE OUPUT
+--   SET THE QUOTE WRAPPER TO "" IF ITS STRING TYPE
 EXECUTE IMMEDIATE "SELECT data_type FROM " || projectId || "." || datasetName || ".INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" || tableName || "' AND column_name = '" || colPivot || "'" INTO colPivotDataType;
-
--- Set the quote character based on the data type
 SET quoteChar = (CASE WHEN colPivotDataType = 'STRING' THEN '"' ELSE '' END);
 
--- CONVERT THE UNIQUE VALUES TO PIVOT ON INTO A COMMA DELIMITED STRING
+-- 2. CONVERT THE UNIQUE VALUES TO PIVOT ON INTO A COMMA DELIMITED STRING
 EXECUTE IMMEDIATE "SELECT STRING_AGG(CONCAT('" || quoteChar || "', CAST(" || colPivot || " AS STRING), '" || quoteChar || "'), ',') FROM (SELECT DISTINCT " || colPivot || " FROM " || fqTable || ")" INTO sPivotList;
 
--- INSERT THE COMMA-DELIMITED STRING IN THE QUERY 'IN' CLAUSE
--- NB IN THIS INSTANCE AN EXTRA 'WITH' STEP IS INCLUDED AS THERE SEEMED TO BE A PROBLEM WITH LONG COLUMN NAMES
+-- 3. DO THE ACTUAL PIVOT USING THE LIST OF COLUMN NAMES.
+--  THIS USES A PRE-SELECTION OF ONLY THE COLUMNS NEEDED
+--  RESULTS ADDED TO A NEW TABLE
 EXECUTE IMMEDIATE "CREATE TABLE " || CONCAT("`", projectId, ".", datasetName, ".PVT_", tableName, "`") || " AS WITH prePivot AS (SELECT " || colID || ", " || colPivot || ", " || colValue || " FROM " || fqTable || ") SELECT * FROM prePivot PIVOT (SUM(" || colValue || ") " || colPrefix || " FOR " || colPivot || " IN (" || sPivotList || "))";
-
-
