@@ -8,8 +8,8 @@ from google.cloud import bigquery
 
 # Define the search/replace key-value pairs
 placeholders = {
-    "_PROJECT_": "your_project_id",
-    "_DATASET_": "your_dataset_name",
+    "_PROJECT_": "'your_project_id'",
+    "_DATASET_": "'your_dataset_name'",
 }
 
 # Set environment variable to use the provided project ID
