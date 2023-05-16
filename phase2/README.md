@@ -20,9 +20,9 @@ UPDATE `_PROJECT_._DATASET_.OA21_CENTROIDS`
     SET centroid = ST_GEOGPOINT(longitude,latitude) WHERE true;
 ```
 
-The other geographical variable that is relevant here is the land area, which then supports the population desnsity figures. Areas form part of the Standard Area Measurement dataset, available in CSV format (zipped) at https://geoportal.statistics.gov.uk/datasets/a488cb8fc9a74accb63cb52961e456ef/about. The file needed is SAM_OA_DEC_2021_EW.csv from within the zip resource. I've loaded it as the `OA21_AREAS` table in this instance.
+The other geographical variable that is relevant here is the land area, which then supports the population desnsity figures. Areas form part of the Standard Area Measurement dataset, available in CSV format (zipped) at https://geoportal.statistics.gov.uk/datasets/a488cb8fc9a74accb63cb52961e456ef/about. The file needed is SAM_OA_DEC_2021_EW.csv from within the zip resource. I've loaded it as the `OA21_AREAS` table, again using the same process of uploading to the storage bucket. **Again, to save time, I've added this CSV file to this repository and you can find it listed above.**
 
-To make these 
+The values from the Standard Area Measurements and from the Centroids file can be added to our Conflated table of variables using the following SQL:
 
 ```SQL
 -- Step 1: Add the empty columns to the PVT_Conflated table
