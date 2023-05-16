@@ -8,8 +8,8 @@ from google.cloud import bigquery
 
 # Define the search/replace key-value pairs
 placeholders = {
-    "_PROJECT_": "'your_project_id'",
-    "_DATASET_": "'your_dataset_name'",
+    "_PROJECT_": "your_project_id",
+    "_DATASET_": "your_dataset_name",
 }
 
 # Set environment variable to use the provided project ID
@@ -27,9 +27,10 @@ subprocess.run(["git", "clone", repo_url, os.path.join(current_working_directory
 def replace_placeholders(file_path, replacements):
     with open(file_path, "r") as f:
         content = f.read()
-
+    
+    # Replace the text in the raw SQL, ensuring it is appropriately quote-wrapped
     for search, replace in replacements.items():
-        content = content.replace(search, replace)
+        content = content.replace(search, f'"{replace}"')
 
     with open(file_path, "w") as f:
         f.write(content)
