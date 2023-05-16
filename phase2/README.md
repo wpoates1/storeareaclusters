@@ -13,7 +13,7 @@ UPDATE `_PROJECT_._DATASET_.OA21_CENTROIDS`
     SET centroid = ST_GEOGPOINT(longitude,latitude) WHERE true;
 ```
 
-The other geographical variable that is relevant here is the land area, which then supports the population desnsity figures. Areas form part of the Standard Area Measurement dataset, available in CSV format (zipped) at https://geoportal.statistics.gov.uk/datasets/a488cb8fc9a74accb63cb52961e456ef/about. The file needed is SAM_OA_DEC_2021_EW.csv from within the zip resource. I've loaded it as the `OA_AREAS` table in this instance.
+The other geographical variable that is relevant here is the land area, which then supports the population desnsity figures. Areas form part of the Standard Area Measurement dataset, available in CSV format (zipped) at https://geoportal.statistics.gov.uk/datasets/a488cb8fc9a74accb63cb52961e456ef/about. The file needed is SAM_OA_DEC_2021_EW.csv from within the zip resource. I've loaded it as the `OA21_AREAS` table in this instance.
 
 To make these 
 
@@ -25,13 +25,13 @@ ALTER TABLE `_PROJECT_._DATASET_.PVT_Conflated`
     ADD COLUMN IF NOT EXISTS centroid GEOGRAPHY;
 
 -- Step 2: Update the column values in PVT_Conflated table
-UPDATE `gdms-demo-20230201.census2021.PVT_Conflated` A
+UPDATE `_PROJECT_._DATASET_.PVT_Conflated` A
 SET A.LandAreaHect = B.Land_Count__Area_in_Hectares_, 
     A.LA22 = B.LTLA22NM
-FROM `_PROJECT_._DATASET_.OA_AREAS` B
+FROM `_PROJECT_._DATASET_.OA21_AREAS` B
 WHERE A.Output_Areas = B.OA21CD;
 
-UPDATE `gdms-demo-20230201.census2021.PVT_Conflated` A
+UPDATE `_PROJECT_._DATASET_.PVT_Conflated` A
 SET A.centroid = B.centroid
 FROM `_PROJECT_._DATASET_.OA21_CENTROIDS` B
 WHERE A.Output_Areas = B.OA21CD;
