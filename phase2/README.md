@@ -74,3 +74,5 @@ ORDER BY K10Totalpop DESC;
 The remainder of the aggregated variables in this table are styled on the variables in the original Output Area Classification research paper _TO-DO: write out description of the variables_
 
 After completing this aggregation, we have a table featuring each store that we are interested in with a selection of the input variables summarised for each. Save the results of this query as a new table in BigQuery, as it will form the baiss for Phase 3 - the Clustering.
+
+**IMPORTANT - for the scripts in the Phase 3 to work 'out of the box' save the results of this query as a new table in your dataset, giving it the name `K10Raw` (10 Kilometre, Raw Totals)**
