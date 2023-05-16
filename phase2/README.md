@@ -3,6 +3,7 @@
 
 
 ## Adding Geospatial References to the Output Areas
+_If you have used the `loadsqlscripts.py` routine in pre-requisites, then the `OA21_CENTROIDS` and the `OA21_AREAS` tables will have been loaded for you, so there is no need to manually upload the files in the step below. You can skip the upload part and just run the SQL scripts to create the centroids and to add the values to the main `PVT_Conflated` table._
 
 ### Population Weighted Centroids for each Output Area 
 In order to conduct the spatial integration, then we need the location of each Output Area. In a really deatiled analysis you might utilise the full polygons each Output Area, but in this case, we can utilise the Population Weighted Centroids which describe a point inside the polygon that is approximately the mid-point of all the recorded addresses. This centroid dataset is available from ONS Geoportal at https://geoportal.statistics.gov.uk/datasets/ons::output-areas-dec-2021-pwc-version-2/about. On this site, they are expressed in Ordnance Survey National Grid Co-ordinates, rather than latitude and longitude, so they need to be converted. This is easily accomplished in Python code using Cloud Shell (or a  notebook etc.) and the script  `add lat and long columns.py` provides this functionality.
@@ -20,6 +21,7 @@ UPDATE `_PROJECT_._DATASET_.OA21_CENTROIDS`
     SET centroid = ST_GEOGPOINT(longitude,latitude) WHERE true;
 ```
 
+### Area Statistics for each Output Area 
 The other geographical variable that is relevant here is the land area, which then supports the population desnsity figures. Areas form part of the Standard Area Measurement dataset, available in CSV format (zipped) at https://geoportal.statistics.gov.uk/datasets/a488cb8fc9a74accb63cb52961e456ef/about. The file needed is SAM_OA_DEC_2021_EW.csv from within the zip resource. I've loaded it as the `OA21_AREAS` table, again using the same process of uploading to the storage bucket. **Again, to save time, I've added this CSV file to this repository and you can find it listed above.**
 
 The values from the Standard Area Measurements and from the Centroids file can be added to our Conflated table of variables using the following SQL:
