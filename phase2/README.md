@@ -3,7 +3,14 @@
 
 
 ## Adding Geospatial References to the Output Areas
-In order to conduct the spatial integration, then we need the location of centroids. In a really deatiled analysis you might utilise the full polygons each Output Area, but in this case, we can utilise the Population Weighted Centroids, available from ONS Geoportal at https://geoportal.statistics.gov.uk/datasets/ons::output-areas-dec-2021-pwc-version-2/about. These have been downloaded in CSV format and can then be uploaded to a table in BigQuery - the `OA21_CENTROIDS` in this case. The file contains the latitude and longitude pair for each centroid; this can be converted to a spatial object using this SQL
+
+### Population Weighted Centroids for each Output Area 
+In order to conduct the spatial integration, then we need the location of each Output Area. In a really deatiled analysis you might utilise the full polygons each Output Area, but in this case, we can utilise the Population Weighted Centroids which describe a point inside the polygon that is approximately the mid-point of all the recorded addresses. This centroid dataset is available from ONS Geoportal at https://geoportal.statistics.gov.uk/datasets/ons::output-areas-dec-2021-pwc-version-2/about. On this site, they are expressed in Ordnance Survey National Grid Co-ordinates, rather than latitude and longitude, so they need to be converted. This is easily accomplished in Python code using Cloud Shell (or a  notebook etc.) and the script  `add lat and long columns.py` provides this functionality.
+
+**You can skip this step by downloading the file `Output_Areas_2021_PWCv2.csv` from the repository above, adding it to your storage bucket and then creating the table `OA21_CENTROIDS` in BigQuery**
+
+
+There are These have been downloaded in CSV format and can then be uploaded to a table in BigQuery - the `OA21_CENTROIDS` in this case. The file contains the latitude and longitude pair for each centroid; this can be converted to a spatial object using this SQL
 
 ```SQL
 ALTER TABLE `_PROJECT_._DATASET_.OA21_CENTROIDS` 
