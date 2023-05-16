@@ -9,6 +9,8 @@ In this example, we are starting with a prepared list of stores, giving the loca
 This process yielded a CSV file with nicely formatted addresses, co-ordinates for the postcodes and also a few other additional geography features that may come in handy.
 
 ### Uploading to BigQuery
+_If you have used the `loadsqlscripts.py` routine in pre-requisites, then the stores table will have been loaded for you, so there is no need to manually upload the stores file. It my still be useful to create the storage bucket_
+
 First, if you haven't done so alread, create a Google Cloud Storage bucket to hold all these files. Use the default settings - including accepting the US Multi Region (the default setting) for location. This [guide](https://www.techrepublic.com/article/how-to-create-a-file-storage-bucket-in-google-cloud-platform/) has a useful tutorial if you are unsure about this. Upload the stores.csv file to this bucket - you can drag and drop from Explorer if you are using Chrome! Otherwise, use the Upload function in the console.
 
 Next upload this CSV file to BigQuery to create our dataset. If you're unsure about how to do this, take a look at Google's [help document](https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv#loading_csv_data_into_a_table). The data here is all nicely formatted and will load just by accepting the defaults, including schema autodetect. Again, to keep life simple, accept the default location as US Multi-region for the new table. 
