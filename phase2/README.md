@@ -10,7 +10,7 @@ In order to conduct the spatial integration, then we need the location of each O
 **You can skip this step by downloading the file `Output_Areas_2021_PWCv2.csv` from the repository above, adding it to your storage bucket and then creating the table `OA21_CENTROIDS` in BigQuery**
 
 
-There are These have been downloaded in CSV format and can then be uploaded to a table in BigQuery - the `OA21_CENTROIDS` in this case. The file contains the latitude and longitude pair for each centroid; this can be converted to a spatial object using this SQL
+The `OA21_CENTROIDS` table contains the latitude and longitude pair for each centroid; this can be converted to a spatial object using this SQL:
 
 ```SQL
 ALTER TABLE `_PROJECT_._DATASET_.OA21_CENTROIDS` 
