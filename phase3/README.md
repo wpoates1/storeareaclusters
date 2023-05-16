@@ -48,8 +48,8 @@ SELECT * EXCEPT (Store) FROM `_PROJECT_._DATASET_.K10Raw`
 Applying the model to the dataset with:
 
 ```SQL
-SELECT * FROM ML.PREDICT(MODEL `gdms-demo-20230201.census2021.PCA_10Clusters_OAandPop_KPP`, 
-  (SELECT * FROM `gdms-demo-20230201.census2021.K10Raw`))
+SELECT * FROM ML.PREDICT(MODEL `_PROJECT_._DATASET_.PCA_10Clusters_OAandPop_KPP`, 
+  (SELECT * FROM `_PROJECT_._DATASET_.K10Raw`))
 ```
 
 ## Visualising the Cluster Results
