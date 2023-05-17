@@ -38,7 +38,8 @@ def replace_placeholders(file_path, replacements):
     
     # Replace the text in the raw SQL, ensuring it is appropriately quote-wrapped
     for search, replace in replacements.items():
-        content = content.replace(search, f'"{replace}"')
+                content = content.replace(search, replace)
+                
 
     with open(file_path, "w") as f:
         f.write(content)
