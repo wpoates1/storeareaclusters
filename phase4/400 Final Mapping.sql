@@ -10,7 +10,7 @@ kmean_prediction AS (
 ),
 pca_prediction AS (
   SELECT * 
-  FROM ML.PREDICT(MODEL `_PROJECT_._DATSET_.PCA_10Clusters_OAandPop_KPP`, 
+  FROM ML.PREDICT(MODEL `_PROJECT_._DATASET_.PCA_10Clusters_OAandPop_KPP`, 
     (SELECT * FROM `_PROJECT_._DATASET_.K10Raw`))
 ),
 stores AS (
